@@ -4,7 +4,6 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
-/env.properties
 
 ### STS ###
 .apt_generated
@@ -36,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### DB 정보 관련 ###
+**/src/main/resources/application-env.properties
