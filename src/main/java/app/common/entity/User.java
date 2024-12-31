@@ -1,5 +1,6 @@
 package app.common.entity;
 
+import app.user.model.request.SignUpRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,10 +25,17 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    private boolean isDeleted;
 
-    public User(String userName, String email, String password) {
-        this.userName = userName;
-        this.email = email;
+    public static User createUser(SignUpRequest request, String encodePassword, boolean isDeleted) {
+        return new User(null, request.userName(), request.email(), encodePassword, isDeleted);
+    }
+
+    public void updateIsDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
+    }
+
+    public void updatePassword(String password) {
         this.password = password;
     }
 }

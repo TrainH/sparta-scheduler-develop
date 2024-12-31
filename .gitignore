@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### DB 정보 관련 ###
-**/src/main/resources/application-env.properties
+src/main/resources/application-env.properties
