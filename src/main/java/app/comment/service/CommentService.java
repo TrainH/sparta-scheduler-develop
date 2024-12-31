@@ -29,36 +29,39 @@ public class CommentService {
         return commentRepository.findCommentsByUserId(userId, pageable);
     }
 
-    public CommentDto createComment(Long scheduleId, CreateCommentRequest request, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(()-> new ValidateException("존재 하지 않는 유저 입니다.", HttpStatus.NOT_FOUND));
-        Schedule schedule = scheduleRepository.findById(scheduleId).orElseThrow(()-> new ValidateException("존재 하지 않는 게시글 입니다.", HttpStatus.NOT_FOUND));
-        Comment comment = Comment.of(request,user,schedule);
+
+    public CommentDto createComment(Long userId, Long scheduleId, CreateCommentRequest request) {
+        User user = userRepository.findByUserIdOrElseThrow(userId);
+
+        Schedule schedule = scheduleRepository.findByScheduleIdOrElseThrow(scheduleId);
+
+        Comment comment = Comment.of(request, user, schedule);
+
         commentRepository.save(comment);
+
         return convertDto(comment);
     }
 
-    public CommentDto updateComment(Long commentId, UpdateCommentRequest request, Long userId) {
-        Comment comment = findCommentById(commentId);
-        if (!comment.getUser().getUserId().equals(userId)) {
-            throw new ValidateException("댓글 업데이트에 대한 권한을 가지고 있지않습니다.", HttpStatus.CONFLICT);
-        }
+
+    public CommentDto updateComment(Long userId, Long scheduleId, Long commentId, UpdateCommentRequest request) {
+        Comment comment = commentRepository.findByCommentIdOrElseThrow(commentId);
+
+        comment.validateUserId(userId);
 
         comment.updateComment(request);
+
         commentRepository.save(comment);
+
         return convertDto(comment);
     }
 
-    public void deleteComment(Long scheduleId, Long commentId, Long userId) {
-        Comment comment = findCommentById(commentId);
-        if (!comment.getUser().getUserId().equals(userId)) {
-            throw new ValidateException("댓글 삭제에 대한 권한을 가지고 있지않습니다.", HttpStatus.CONFLICT);
-        }
-        commentRepository.deleteById(commentId);
-    }
 
-    private Comment findCommentById(Long commentId) {
-        return commentRepository.findById(commentId)
-            .orElseThrow(()-> new ValidateException("존재 하지 않는 댓글 입니다.", HttpStatus.NOT_FOUND));
+    public void deleteComment(Long userId, Long scheduleId, Long commentId) {
+        Comment comment = commentRepository.findByCommentIdOrElseThrow(commentId);
+
+        comment.validateUserId(userId);
+
+        commentRepository.deleteById(commentId);
     }
 
     private CommentDto convertDto(Comment comment) {return CommentDto.convertDto(comment); }

@@ -27,26 +27,38 @@ public class ScheduleController {
         @RequestParam(required = false) Long userId,
         @RequestParam(defaultValue = "1") int page,
         @RequestParam(defaultValue = "10") int size) {
+
         Pageable pageable = PageRequest.of(page-1, size);
+
         return new ResponseEntity<>(scheduleService.getSchedules(userId, pageable), HttpStatus.OK);
     }
 
+
     @PostMapping
     public ResponseEntity<ScheduleDto> createSchedule(@Valid @RequestBody CreateScheduleRequest request, HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
-        return new ResponseEntity<>(scheduleService.createSchedule(request, userId),HttpStatus.CREATED);
+
+        return new ResponseEntity<>(scheduleService.createSchedule(userId, request),HttpStatus.CREATED);
     }
+
 
     @PutMapping("/{scheduleId}")
     public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable Long scheduleId,@Valid @RequestBody UpdateScheduleRequest request, HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
-        return new ResponseEntity<>(scheduleService.updateSchedule(scheduleId,request,userId),HttpStatus.OK);
+
+        return new ResponseEntity<>(scheduleService.updateSchedule(userId, scheduleId, request),HttpStatus.OK);
     }
+
 
     @DeleteMapping("/{scheduleId}")
     public ResponseEntity<Void> deleteSchedule(@PathVariable Long scheduleId, HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
-        scheduleService.deleteSchedule(scheduleId, userId);
+
+        scheduleService.deleteSchedule(userId, scheduleId);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
