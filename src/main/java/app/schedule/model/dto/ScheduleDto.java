@@ -23,7 +23,6 @@ public class ScheduleDto {
     private LocalDateTime updatedAt;
 
 
-    // TODO :: 정적 팩토리 메서드를 사용하면 어떤 장점이 있을까요?
     public static ScheduleDto convertDto(Schedule schedule) {
         return new ScheduleDto(schedule.getScheduleId(),
             schedule.getTitle(),

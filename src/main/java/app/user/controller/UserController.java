@@ -29,6 +29,15 @@ public class UserController {
         return new ResponseEntity<>("삭제 되었습니다. ", HttpStatus.OK);
     }
 
+    @PatchMapping("/updatePassword")
+    public ResponseEntity<String> updatePassword(@Valid@RequestBody PasswordRequest request, HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        userService.updatePassword(userId, request.oldPassword(), request.newPassword());
+        session.invalidate();
+        return new ResponseEntity<>("비밀번호가 변경되었습니다. 다시 로그인 해주세요.", HttpStatus.OK);
+    }
+
+
     @PostMapping("/login")
     public ResponseEntity<String> getUserId(@Valid @RequestBody LoginRequest request, HttpSession session) {
         Long userId = userService.getUserId(request);

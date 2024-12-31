@@ -30,20 +30,24 @@ public class ScheduleService {
         return scheduleRepository.findSchedulesByUserId(userId, pageable);
     }
 
-    public ScheduleDto createSchedule(CreateScheduleRequest request, long userId) {
-        User author = userRepository.findById(userId).orElseThrow(()-> new ValidateException("존재 하지 않는 유저 입니다.", HttpStatus.NOT_FOUND));
-        Schedule schedule = Schedule.of(request,author);
+
+    public ScheduleDto createSchedule(Long userId, CreateScheduleRequest request) {
+
+        User user = userRepository.findByUserIdOrElseThrow(userId);
+
+        Schedule schedule = Schedule.of(request, user);
+
         scheduleRepository.save(schedule);
+
         return convertToDto(schedule);
     }
 
-    public ScheduleDto updateSchedule(long scheduleId, UpdateScheduleRequest request, Long userId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
 
-        if (!schedule.getUser().getUserId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to delete this schedule.");
-        }
+    public ScheduleDto updateSchedule(Long userId, Long scheduleId, UpdateScheduleRequest request) {
+
+        Schedule schedule = scheduleRepository.findByScheduleIdOrElseThrow(scheduleId);
+
+        schedule.validateUserId(userId);
 
         schedule.updateSchedule(request);
 
@@ -52,19 +56,19 @@ public class ScheduleService {
         return convertToDto(schedule);
     }
 
-    public void deleteSchedule(Long scheduleId, Long userId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
 
-        if (!schedule.getUser().getUserId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to delete this schedule");
-        }
+    public void deleteSchedule(Long userId, Long scheduleId) {
+
+        Schedule schedule = scheduleRepository.findByScheduleIdOrElseThrow(scheduleId);
+
+        schedule.validateUserId(userId);
+
         scheduleRepository.deleteById(scheduleId);
     }
+
 
     private ScheduleDto convertToDto(Schedule schedule) {
         return ScheduleDto.convertDto(schedule);
     }
-
 
 }

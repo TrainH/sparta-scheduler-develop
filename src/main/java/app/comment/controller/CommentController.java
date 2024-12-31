@@ -27,26 +27,45 @@ public class CommentController {
                                                               @PathVariable Long scheduleId,
                                                               @RequestParam(defaultValue = "5") int size,
                                                               @RequestParam(defaultValue = "1") int page) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
+
         return new ResponseEntity<>(commentService.getCommentsByScheduleId(scheduleId, pageable), HttpStatus.OK);
     }
 
+
     @PostMapping("/{scheduleId}/comments")
-    public ResponseEntity<CommentDto> createComment(@Valid @PathVariable Long scheduleId, @RequestBody CreateCommentRequest request, HttpSession session) {
+    public ResponseEntity<CommentDto> createComment(@PathVariable Long scheduleId,
+                                                    @Valid @RequestBody CreateCommentRequest request,
+                                                    HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
-        return new ResponseEntity<>(commentService.createComment(scheduleId, request, userId), HttpStatus.OK);
+
+        return new ResponseEntity<>(commentService.createComment(userId, scheduleId, request), HttpStatus.OK);
     }
+
 
     @PutMapping("/{scheduleId}/comments/{commentId}")
-    public ResponseEntity<CommentDto> updateComment(@PathVariable Long commentId,@Valid @RequestBody UpdateCommentRequest request, HttpSession session) {
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Long scheduleId,
+                                                    @PathVariable Long commentId,
+                                                    @Valid @RequestBody UpdateCommentRequest request,
+                                                    HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
-        return new ResponseEntity<>(commentService.updateComment(commentId,request, userId), HttpStatus.OK);
+
+        return new ResponseEntity<>(commentService.updateComment(userId, scheduleId, commentId, request), HttpStatus.OK);
     }
 
+
     @DeleteMapping("/{scheduleId}/comments/{commentId}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long scheduleId, @PathVariable Long commentId, HttpSession session) {
+    public ResponseEntity<Void> deleteComment(@PathVariable Long scheduleId,
+                                              @PathVariable Long commentId,
+                                              HttpSession session) {
+
         Long userId = (Long) session.getAttribute("userId");
-        commentService.deleteComment(scheduleId, commentId, userId);
+
+        commentService.deleteComment(userId, scheduleId, commentId);
+
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -1,9 +1,11 @@
 package app.common.entity;
 
+import app.common.exception.ValidateException;
 import app.schedule.model.request.CreateScheduleRequest;
 import app.schedule.model.request.UpdateScheduleRequest;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @AllArgsConstructor
@@ -41,6 +43,12 @@ public class Schedule extends BaseEntity {
         }
         if(request.content() != null) {
             this.content = request.content();
+        }
+    }
+
+    public void validateUserId(Long loginUserId) {
+        if (!this.getUser().getUserId().equals(loginUserId)) {
+            throw new ValidateException("권한이 없습니다.",HttpStatus.UNAUTHORIZED);
         }
     }
 }

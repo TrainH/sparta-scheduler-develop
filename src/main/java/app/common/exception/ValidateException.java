@@ -5,10 +5,11 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class ValidateException extends RuntimeException {
+    private final String errorMessage;
     private final HttpStatus httpStatus;
-    private final String message;
-    public ValidateException(String message, HttpStatus httpStatus) {
-        this.message = message;
+    public ValidateException(String errorMessage, HttpStatus httpStatus) {
+        super(errorMessage);
+        this.errorMessage  = errorMessage ;
         this.httpStatus = httpStatus;
     }
 }
