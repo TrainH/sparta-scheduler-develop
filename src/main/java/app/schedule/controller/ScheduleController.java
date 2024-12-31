@@ -34,7 +34,7 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<ScheduleDto> createSchedule(@Valid @RequestBody CreateScheduleRequest request, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
-        return new ResponseEntity<>(scheduleService.createSchedule(request, userId),HttpStatus.OK);
+        return new ResponseEntity<>(scheduleService.createSchedule(request, userId),HttpStatus.CREATED);
     }
 
     @PutMapping("/{scheduleId}")

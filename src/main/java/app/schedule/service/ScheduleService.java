@@ -39,10 +39,10 @@ public class ScheduleService {
 
     public ScheduleDto updateSchedule(long scheduleId, UpdateScheduleRequest request, Long userId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
+                .orElseThrow(() -> new ValidateException("일정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
         if (!schedule.getUser().getUserId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to delete this schedule.");
+            throw new ValidateException("일정 업데이트 권한이 없습니다.",HttpStatus.UNAUTHORIZED);
         }
 
         schedule.updateSchedule(request);
@@ -54,10 +54,10 @@ public class ScheduleService {
 
     public void deleteSchedule(Long scheduleId, Long userId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Schedule not found"));
+                .orElseThrow(() -> new ValidateException("일정을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
 
         if (!schedule.getUser().getUserId().equals(userId)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You are not authorized to delete this schedule");
+            throw new ValidateException("일정 삭제 권한이 없습니다.", HttpStatus.UNAUTHORIZED);
         }
         scheduleRepository.deleteById(scheduleId);
     }
