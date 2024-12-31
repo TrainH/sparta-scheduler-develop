@@ -1,39 +1,40 @@
 package app.common.entity;
 
+import app.comment.model.request.CreateCommentRequest;
+import app.comment.model.request.UpdateCommentRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
-@Table
+
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Table(name = "comment")
 public class Comment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long commentId;
 
-    @Setter
     private String content;
 
     @ManyToOne
-    @JoinColumn(name = "user_id",nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "schedule_id",nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @JoinColumn(name = "schedule_id")
     private Schedule schedule;
 
-
-    public Comment(String content, User user, Schedule schedule) {
-        this.content = content;
-        this.user = user;
-        this.schedule = schedule;
+    public static Comment of(CreateCommentRequest request, User user, Schedule schedule) {
+        return new Comment(null, request.content(), user, schedule);
     }
+
+    public void updateComment(UpdateCommentRequest request) {
+        this.content = request.content();
+    }
+
 }
